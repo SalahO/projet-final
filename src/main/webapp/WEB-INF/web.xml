@@ -36,4 +36,13 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+
+  <!-- Tiles Listener for jsp templates -->
+  <servlet>
+    <servlet-name>tilesDispatchServlet</servlet-name>
+    <servlet-class>org.apache.tiles.web.util.TilesDispatchServlet</servlet-class>
+  </servlet>
+  <listener>
+    <listener-class>org.apache.tiles.extras.complete.CompleteAutoloadTilesListener</listener-class>
+  </listener>
 </web-app>

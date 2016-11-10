@@ -15,6 +15,7 @@
 		<h2.version>1.3.166</h2.version>
 		<hibernate.version>3.6.9.Final</hibernate.version>
 		<jstl.version>1.2</jstl.version>
+		<tiles.version>3.0.7</tiles.version>
 	</properties>
 
 	<build>
@@ -29,12 +30,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<path>/</path>
-				</configuration>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.4.0.RC1</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -113,6 +111,32 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- tiles for jsp templating -->
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-extras</artifactId>
+			<version>${tiles.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+			<version>${tiles.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-servlet</artifactId>
+			<version>${tiles.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-template</artifactId>
+			<version>${tiles.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-el</artifactId>
+			<version>${tiles.version}</version>
 		</dependency>
 
 		<!-- database -->

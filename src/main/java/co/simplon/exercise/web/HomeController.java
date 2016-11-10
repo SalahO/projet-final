@@ -13,7 +13,7 @@ public class HomeController {
 	public ModelAndView welcome(ModelMap model) {
 
 		model.addAttribute("message", "Welcome to my website");
-		return new ModelAndView("home", model);
+		return new ModelAndView("tiles.home", model);
 
 	}
 
