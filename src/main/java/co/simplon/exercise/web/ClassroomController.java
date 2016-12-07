@@ -20,7 +20,18 @@ public class ClassroomController {
 	
 	@Autowired
 	private ClassroomService classroomService;
-//
+
+	// Constructors
+
+
+	public ClassroomController( ClassroomService classroomService) {
+
+		this.classroomService = classroomService;
+	}
+
+	public ClassroomController() {
+	}
+
 	@RequestMapping
 	public ModelAndView get( ModelMap model) {
 		List<Classroom> classrooms = classroomService.getAll();
@@ -49,6 +60,8 @@ public class ClassroomController {
 		classroomService.delete(id);
 		return new ModelAndView("redirect:/classroom");
 	}
+	
+	
 	
 	@RequestMapping(path="/updateClassroom")
 	public ModelAndView getUpdateClassroomForm(@RequestParam Integer id, ModelMap model)

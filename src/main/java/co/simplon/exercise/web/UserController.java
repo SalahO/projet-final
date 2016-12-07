@@ -22,17 +22,16 @@ public class UserController {
 	@RequestMapping()
 	public ModelAndView get(ModelMap model) {
 		List<User> users = userService.getAll();
-		//System.out.println(user);
 		model.addAttribute("users", users);
 		return new ModelAndView("user/usersList", model);
 	}
 
 	@RequestMapping(path = "/profil")
 	public ModelAndView getMyProfil(ModelMap model) {
-		String name = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println("name : "+name);
-		User myself = userService.findOneByEmail(name);
-		System.out.println("myself : "+myself.getEmail());
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//		System.out.println("name : "+name);
+		User myself = userService.findOneByEmail(email);
+//		System.out.println("myself : "+myself.getEmail());
 		model.addAttribute("myInfos", myself);
 		return new ModelAndView("user/myprofil", model);
 	}
@@ -43,7 +42,7 @@ public class UserController {
 	}
 
 	@RequestMapping(path = "/addUser")
-	public ModelAndView addUser(@RequestParam String name,
+	public ModelAndView addUser(  @RequestParam String name,
 								  @RequestParam String surname,
 								  @RequestParam String email,
 								  @RequestParam String password,
@@ -74,7 +73,7 @@ public class UserController {
 								   @RequestParam String surname,
 								   @RequestParam String password,
 								   @RequestParam String email,
-									 ModelMap model)
+								   ModelMap model)
 	{
 		User userToUpdate = userService.findById(id);
 		userToUpdate.setName(name);

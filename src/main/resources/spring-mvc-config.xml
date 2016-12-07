@@ -13,8 +13,6 @@
 	<context:component-scan base-package="co.simplon.exercise.web" />
 	<mvc:resources mapping="/webjars/**" location="/webjars/" />
 	<mvc:resources mapping="/resources/**" location="/resources/"/>
-
-
 	<mvc:annotation-driven />
 
 	<!--<bean id="viewResolver"-->
