@@ -43,7 +43,7 @@ public class ReservationController {
 	{
 		model.addAttribute("reservations", reservationService.getAll());
 		
-		return new ModelAndView("reservation/reservations", model);
+		return new ModelAndView("tiles.reservations", model);
 	}
 	
 	/**

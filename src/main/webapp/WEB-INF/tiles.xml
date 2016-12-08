@@ -8,4 +8,27 @@
         <put-attribute name="header" value="/WEB-INF/view/includes/header.jsp" />
         <put-attribute name="body" value="/WEB-INF/view/home.jsp" />
     </definition>
+
+    <!-- AUTHENTICATION-->
+    <definition name="tiles.login" template="/WEB-INF/view/layouts/autentication-layout.jsp">
+        <put-attribute name="title" value="Login page" />
+        <put-attribute name="header" value="/WEB-INF/view/includes/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/view/authentication/signin.jsp" />
+    </definition>
+    <definition name="tiles.signup" extends="tiles.login">
+        <put-attribute name="title" value="create account" />
+        <put-attribute name="body" value="/WEB-INF/view/authentication/signup.jsp" />
+    </definition>
+
+    <!-- RESERVATIONS-->
+    <definition name="tiles.reservations" template="/WEB-INF/view/layouts/classic.jsp">
+        <put-attribute name="title" value="Reservations Page" />
+        <put-attribute name="header" value="/WEB-INF/view/includes/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/view/reservation/reservations.jsp" />
+    </definition>
+    <!-- USERS -->
+    <definition name="tiles.users" extends="tiles.home">
+        <put-attribute name="title" value="List of users" />
+        <put-attribute name="body" value="WEB-INF/view/user/usersList.jsp" />
+    </definition>
 </tiles-definitions>

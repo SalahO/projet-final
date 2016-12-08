@@ -23,7 +23,7 @@ public class UserController {
 	public ModelAndView get(ModelMap model) {
 		List<User> users = userService.getAll();
 		model.addAttribute("users", users);
-		return new ModelAndView("user/usersList", model);
+		return new ModelAndView("tiles.users", model);
 	}
 
 	@RequestMapping(path = "/profil")
@@ -38,7 +38,7 @@ public class UserController {
 
 	@RequestMapping(path = "/form/adduser")
 	public ModelAndView getUserAddForm(){
-		return new ModelAndView("user/addUserForm");
+		return new ModelAndView("tiles.signup");
 	}
 
 	@RequestMapping(path = "/addUser")

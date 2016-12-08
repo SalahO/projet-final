@@ -16,7 +16,7 @@ public class AuthenticationController {
 
     @RequestMapping(path = "/login")
     public ModelAndView signin(ModelMap model) {
-        return new ModelAndView("authentication/signin");
+        return new ModelAndView("tiles.login");
     }
 
     @RequestMapping(value = "/logout")

@@ -8,26 +8,27 @@
 <header>
     <title><tiles:getAsString name="title"/></title>
 
-	<!-- Bootstrap core CSS -->
-    <link href="../webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="../../webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-   <link href="<c:url value="../resources/css/home.css" />" rel="stylesheet">
+    <link href="<c:url value="../../../resources/css/signin.css" />" rel="stylesheet">
+
 </header>
 <body>
 
-    <div class="site-wrapper">
-      <div class="site-wrapper-inner">
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
         <div class="cover-container">
             <tiles:insertAttribute name="header"/>
             <tiles:insertAttribute name="body"/>
         </div>
-      </div>
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../webjars/jquery/3.1.1/jquery.min.js"></script>
-    <script src="../webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+<script src="/webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
