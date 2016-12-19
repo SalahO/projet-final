@@ -18,10 +18,51 @@
             <div class="row">
                 <div class="col-md-8 col-sm-6 col-xs-12">
                     <div class="alert alert-info">
-                        <p>Cherchez les ressources en fonction de la date</p>
+                        <p>Modification de la réservaton : <br>Résa ${reservation.id }, Salle : ${reservation.classroom.name },
+                        Ordinateur : ${reservation.laptop.name }, Jour : ${reservation.bookingDate}, Début : ${reservation.startTime}, End : ${reservation.endTime}</p>
                     </div>
-                    <form class="form-inline" method="get" action="/reservations/resources/search">
-                        <input type="hidden" name="id" value="${reservation.id }"/>
+                    <form class="form-inline" method="get" action="/reservations/resource/add">
+                        <input type="hidden" name="bookingId" value="${reservation.id }"/>
+                        <select class="carousel form-control" id="availableLaptop" name="laptopId" >
+                        	<c:choose>
+    							<c:when test="${empty reservation.laptop}">
+                   	   				<option value="-1" selected>Aucun laptop</option>
+                   	   			</c:when>
+                   	   			<c:otherwise>
+                   	   				<option value="-1">Aucun laptop</option>
+                   	   			</c:otherwise>
+                   	   		</c:choose>
+                       		<c:forEach items="${allLaptops}" var="laptop">
+                       			<c:choose>
+     								<c:when test="${(empty reservation.laptop) or (reservation.laptop.id != laptop.id)}">
+                   	   					<option value="${laptop.id}">${laptop.name}</option>
+                   	   				</c:when>
+                   	   				<c:otherwise>
+                   	   					<option value="${laptop.id}" selected>${laptop.name}</option>
+                   	   				</c:otherwise>   
+                   	   			</c:choose>        		
+                        	</c:forEach>
+                   		</select>
+                   		<select class="carousel form-control" id="availableRoom" name="roomId">
+                   			<c:choose>
+    							<c:when test="${empty reservation.classroom}">
+                   	   				<option value="-1" selected>Aucune salle</option>
+                   	   			</c:when>
+                   	   			<c:otherwise>
+                   	   				<option value="-1">Aucune salle</option>
+                   	   			</c:otherwise>
+                   	   		</c:choose>
+                       		<c:forEach items="${allRooms}" var="room">
+                       			<c:choose>
+     								<c:when test="${(empty reservation.classroom) or (reservation.classroom.id != classroom.id)}">
+                   	   					<option value="${room.id}">${room.name}</option>
+                   	   				</c:when>
+                   	   				<c:otherwise>
+                   	   					<option value="${room.id}" selected>${room.name}</option>
+                   	   				</c:otherwise>   
+                   	   			</c:choose>        		
+                        	</c:forEach>
+                   		</select>
                         <div class="form-group"> <!-- Date input -->
                             <label class="control-label" for="bookingDate">Date de réservation</label>
                             <input class="form-control" id="bookingDate" name="bookingDate" placeholder="YYYY-MM-DD" 
@@ -54,10 +95,12 @@
                             <option ${end_time_preselected[9]}>19:00</option>
                         </select>
                         <div class="form-group"> <!-- Submit button -->
-                            <button class="btn btn-primary " name="submit" value="submit" type="submit">Rechercher</button>
+                            <button class="btn btn-primary " name="submit" value="submit" type="submit">Modifier</button>
                         </div>
                     </form>
-
+					<c:if test="${not empty msg}">
+						<p>${msg}</p>
+					</c:if>
                 </div>
             </div>
         </div>

@@ -65,7 +65,7 @@ public class ReservationController {
 
 	@RequestMapping(value = "resources/search")
 	public ModelAndView search(
-			@RequestParam(required = false, defaultValue = "0") int id,
+			@RequestParam(required = false, defaultValue = "-1") int id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate bookingDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime,
@@ -199,7 +199,7 @@ public class ReservationController {
 
 	// Afficher le formulaire pour modifier une réservation
 	@RequestMapping(path= "/updateForm")
-	public ModelAndView getUpdateForm(@RequestParam Integer id, ModelMap model)
+	public ModelAndView getUpdateForm(@RequestParam Integer id, Model model)
 	{
 		Reservation resa = reservationService.findById(id);
 		model.addAttribute("reservation", resa);
@@ -207,7 +207,9 @@ public class ReservationController {
 		List<String> liste_end_time_selected   = getSelectedList(resa.getEndTime().getHour()  - 10);
 		model.addAttribute("start_time_preselected", liste_start_time_selected);
 		model.addAttribute("end_time_preselected"  , liste_end_time_selected);
-		return new ModelAndView("reservation/updateReservationForm", model);
+		model.addAttribute("allLaptops", laptopService.getAll());
+		model.addAttribute("allRooms"  , classroomService.getAll());
+		return new ModelAndView("reservation/updateReservationForm", model.asMap());
 	}
 
 	private List<String> getSelectedList(int selected)
@@ -232,5 +234,42 @@ public class ReservationController {
 
 	}
 
+	@RequestMapping
+	public ModelAndView showAllReservations(ModelMap model) {
+		return new ModelAndView("redirect:reservations/current");
+	}
+
+	// Gestion des réservations
+    @RequestMapping(path = "/historic")
+    public ModelAndView showHistoricReservations(ModelMap model) {
+    	List<Reservation> listeReservations;
+    	User currentUser = getCurrentUser();
+    	if( currentUser.isAdmin()  )
+    	{
+    		listeReservations = reservationService.getAllHistoric();
+    	}
+    	else
+    	{
+    		listeReservations = reservationService.getForUserHistoric(currentUser.getId());
+    	}
+        model.addAttribute("reservations", listeReservations);
+        return new ModelAndView("admin/bookings-historic");
+    }
+
+    @RequestMapping(path = "/current")
+    public ModelAndView getCurrentReservations(ModelMap model) {
+    	List<Reservation> listeReservations;
+    	User currentUser = getCurrentUser();
+    	if( currentUser.isAdmin()  )
+    	{
+    		listeReservations = reservationService.getAllCurrent();
+    	}
+    	else
+    	{
+    		listeReservations = reservationService.getForUserCurrent(currentUser.getId());
+    	}
+        model.addAttribute("reservations", listeReservations);
+        return new ModelAndView("reservation/reservations");
+    }
 }
 

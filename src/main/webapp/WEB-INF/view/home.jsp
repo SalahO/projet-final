@@ -30,7 +30,7 @@
 
             <div class="masthead clearfix">
                 <div class="inner">
-                    <h2 class="masthead-brand"><a href="/" style="text-decoration:none">Simplon & Company</a></h2>
+                    <h2 class="masthead-brand"><a href="/" style="text-decoration:none">Simplon</a></h2>
                     <nav>
                         <ul class="nav masthead-nav">
                             <li class="active"><a href="/">Home</a></li>
@@ -43,9 +43,6 @@
                                                 data-toggle="dropdown">Administration
                                             <span class="caret"></span></button>
                                         <ul class="dropdown-menu">
-                                            <li class="dropdown-header">Réservations</li>
-                                            <li><a href="/admin/bookings/current" class="btn btn-lg ">En cours</a></li>
-                                            <li><a href="/admin/bookings/historic" class="btn btn-lg ">Historique</a></li>
                                             <li class="dropdown-header">Ressources</li>
                                             <li><a href="/classroom" class="btn btn-lg ">Salles</a></li>
                                             <li><a href="/laptops" class="btn btn-lg ">Ordinateurs</a></li>
@@ -58,6 +55,18 @@
                             <security:authorize access="isAuthenticated()">
                                 <li>
                                     <div class="dropdown">
+                                        <button class=" btn btn-lg btn-success monCompte" type="button"
+                                                data-toggle="dropdown">Réservations
+                                            <span class="caret"></span></button>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-header">Réservations</li>
+                                            <li><a href="/reservations/current" class="btn btn-lg ">En cours</a></li>
+                                            <li><a href="/reservations/historic" class="btn btn-lg ">Historique</a></li>
+                                        </ul>
+                                   </div>
+                                </li>
+                                <li>
+                                   <div class="dropdown">
                                         <button class=" btn btn-lg btn-success monCompte" type="button"
                                                 data-toggle="dropdown">Mon compte
                                             <span class="caret"></span></button>

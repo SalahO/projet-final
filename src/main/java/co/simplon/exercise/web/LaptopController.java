@@ -48,11 +48,10 @@ public class LaptopController {
 	@RequestMapping(path = "/add")
 	public ModelAndView addLaptop(@RequestParam String name, 
 								@RequestParam String brand, 
-								ModelMap model) {
+								ModelMap model)
+	{
 		laptopService.addOrUpdate(new Laptop(name, brand));
-
 		return new ModelAndView("redirect:/laptops/formAdd");
-
 	}
 
 	/**
