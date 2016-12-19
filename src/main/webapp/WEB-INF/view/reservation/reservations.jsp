@@ -50,7 +50,7 @@
 		      <th>${reservation.bookingDate }</th>
 		      <th>${reservation.startTime }</th>
 			  <th>${reservation.endTime }</th>
-				<security:authorize access="hasAuthority('ADMIN')">
+				
 		      <th>
 				  <a href="/reservations/delete?id=${reservation.id}" data-toggle="tooltip" data-placement="bottom" title="Supprimer">
 					  <span aria-hidden="true" class="glyphicon glyphicon-trash supprimer"></span>
@@ -59,7 +59,7 @@
 					  <span class="glyphicon glyphicon-edit modifier"></span>
 				  </a>
 			  </th>
-				</security:authorize>
+				
 		    </tr>
 		    </c:forEach>
 		   </tbody>

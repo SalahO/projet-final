@@ -17,14 +17,45 @@ import java.util.List;
 @Resource
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    @Query("SELECT r from Reservation r where r.bookingDate >= current_date" +
-            " and r.startTime >= current_time ")
-    List<Reservation> getAllCurentBookings();
+    @Query("SELECT r from Reservation r where r.bookingDate > current_date" +
+            " or (r.bookingDate =  current_date and r.startTime >= current_time) "+
+            " ORDER BY r.bookingDate, r.startTime ")
+    List<Reservation> getAllReservationsCourantes();
 
-    @Query("select r from Reservation r left join User u" +
-            " where r.bookingDate >= current_date " +
-            "and r.startTime >= current_time " )
-    List<Reservation> getMyCurrentBookings(@Param ("endOfCurrentMonth") LocalDate endOfCurrentMonth);
+    @Query("select r from Reservation r" +
+            " where (r.bookingDate > current_date" +
+            " OR (r.bookingDate = current_date and r.startTime >= current_time )) " +
+            " AND r.user.id = :user_id" +
+            " ORDER BY r.bookingDate, r.startTime ")
+    List<Reservation> getReservationsCourantesPourUser(@Param ("user_id") Integer user_id);
 
+    @Query("SELECT r from Reservation r where r.bookingDate < current_date" +
+            " or (r.bookingDate =  current_date and r.startTime < current_time)" +
+            " ORDER BY r.bookingDate, r.startTime ")
+    List<Reservation> getAllReservationsHistoriques();
 
+    @Query("select r from Reservation r" +
+            " where (r.bookingDate < current_date" +
+            " OR (r.bookingDate = current_date and r.startTime < current_time )) " +
+            " AND r.user.id = :user_id" +
+            " ORDER BY r.bookingDate, r.startTime ")
+    List<Reservation> getReservationsHistoriquesPourUser(@Param ("user_id") Integer user_id);
+
+    @Query("SELECT COUNT(r.id) " +
+            "FROM Reservation r " +
+            "WHERE r.bookingDate = :bookingDate AND " +
+            "r.startTime < :endTime AND :startTime < r.endTime AND laptop.id = :laptopId" )
+    Integer findReservationForLaptop(@Param("laptopId") Integer laptopId, 
+    								 @Param("bookingDate") LocalDate bookingDate,
+                                     @Param("startTime") LocalTime startTime,
+                                     @Param("endTime") LocalTime endTime);
+    
+    @Query("SELECT COUNT(r.id) " +
+            "FROM Reservation r " +
+            "WHERE r.bookingDate = :bookingDate AND " +
+            "r.startTime < :endTime AND :startTime < r.endTime AND classroom.id = :classroomId" )
+    Integer findReservationForClassroom(@Param("classroomId") Integer classroomId, 
+    								 @Param("bookingDate") LocalDate bookingDate,
+                                     @Param("startTime") LocalTime startTime,
+                                     @Param("endTime") LocalTime endTime);
 }

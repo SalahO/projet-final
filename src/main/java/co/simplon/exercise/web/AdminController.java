@@ -28,18 +28,7 @@ public class AdminController {
 //        return new ModelAndView("admin/dashboard");
 //    }
 
-    // Gestion des réservations
-    @RequestMapping(path = "/bookings/historic")
-    public ModelAndView showAllReservations(ModelMap model) {
-        model.addAttribute("reservations", reservationService.getAll());
-        return new ModelAndView("admin/bookings-historic");
-    }
-
-    @RequestMapping(path = "/bookings/current")
-    public ModelAndView getCurrentReservations(ModelMap model) {
-        model.addAttribute("reservations", reservationService.findByCurrentDate());
-        return new ModelAndView("reservation/reservations");
-    }
+    
 
     // Gestions des utlisateurs
     @RequestMapping(path = "/users")

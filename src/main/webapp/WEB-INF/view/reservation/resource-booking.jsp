@@ -37,12 +37,14 @@
                <div class="form-group">
                    <!-- Get a dropdown list of available laptops -->
                    <select class="carousel form-control" id="availableLaptop" name="laptopId" >
+                   	   <option value="-1">Aucun laptop</option>
                        <c:forEach items="${availableLaptops}" var="laptop">
-                           <option value="${laptop.id}" name="laptopId">${laptop.name} </option>
+                           <option value="${laptop.id}">${laptop.name} </option>
                        </c:forEach>
                    </select>
                    <!-- Get a dropdown list of available rooms -->
                    <select class="carousel form-control" id="availableRoom" name="roomId">
+                       <option value="-1">Aucune salle</option>
                        <c:forEach items="${availableRooms}" var="room">
                            <option value="${room.id}">${room.name} </option>
                        </c:forEach>
@@ -53,6 +55,9 @@
                </div>
 
            </form>
+           <c:if test="${not empty msg}">
+			<p>${msg}</p>
+		</c:if>
             </div>
 
             </div>

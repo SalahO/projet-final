@@ -19,20 +19,57 @@ import java.util.*;
 public class ReservationService extends GenericService< Reservation, ReservationRepository >{
 
     @Autowired
-    private ReservationRepository reservationRepository;
-    @Autowired
     private UserService userService;
 
     @Autowired
     private LaptopService laptopService;
 
     @Autowired
-    private ReservationService reservationService;
+	private ClassroomService classroomService;
+    
+	public List<Reservation> getAllHistoric() {
+		// TODO Auto-generated method stub
+		return repository.getAllReservationsHistoriques();
+	}
 
 
-    public List<Reservation> findByCurrentDate() {
-        return reservationRepository.getAllCurentBookings();
-    }
+	public List<Reservation> getForUserHistoric(Integer id) {
+		// TODO Auto-generated method stub
+		return repository.getReservationsHistoriquesPourUser(id);
+	}
+
+
+	public List<Reservation> getAllCurrent() {
+		// TODO Auto-generated method stub
+		return repository.getAllReservationsCourantes();
+	}
+
+
+	public List<Reservation> getForUserCurrent(Integer id) {
+		// TODO Auto-generated method stub
+		return repository.getReservationsCourantesPourUser(id);
+	}
+
+
+	public boolean checkIsPossible(Reservation resToUpdate) {
+		if( resToUpdate.getLaptop() != null && repository.findReservationForLaptop(
+				resToUpdate.getLaptop().getId(),
+				resToUpdate.getBookingDate(),
+				resToUpdate.getStartTime(),
+				resToUpdate.getEndTime() ) > 0 )
+		{
+			return false;
+		}
+		if( resToUpdate.getClassroom() != null && repository.findReservationForClassroom(
+				resToUpdate.getClassroom().getId(),
+				resToUpdate.getBookingDate(),
+				resToUpdate.getStartTime(),
+				resToUpdate.getEndTime() ) > 0 )
+		{
+			return false;
+		}
+		return true;
+	}
 
 //    public List<Reservation> getMyCurentBookings(String email) {
 //        return reservationRepository.getMyCurrentBookings(email);

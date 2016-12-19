@@ -73,7 +73,9 @@
                     <button class="btn btn-primary " name="submit" value="submit" type="submit">Rechercher</button>
                 </div>
             </form>
-
+		<c:if test="${not empty msg}">
+			<p>${msg}</p>
+		</c:if>
         </div>
     </div>
 </div>

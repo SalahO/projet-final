@@ -2,6 +2,7 @@ package co.simplon.exercise.web;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import co.simplon.exercise.core.model.Classroom;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,11 +47,9 @@ public class ReservationController {
 	@Autowired
 	private EmailAPI emailAPI;
 
-	@RequestMapping
-	public ModelAndView showAllReservations(ModelMap model) {
-		model.addAttribute("reservations", reservationService.getAll());
-		return new ModelAndView("reservation/reservations");
-	}
+	private final DateTimeFormatter isoDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private final DateTimeFormatter isoTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	
 
 	@RequestMapping(value = "resources/searchform", method = RequestMethod.GET)
 	public ModelAndView getAvailableResourcesSearchForm(ModelMap model) {
@@ -60,27 +60,20 @@ public class ReservationController {
 
 	@RequestMapping(value = "resources/search")
 	public ModelAndView search(
-			@RequestParam(required = false, defaultValue = "0") int id,
+			@RequestParam(required = false, defaultValue = "-1") int id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate bookingDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime,
-			ModelMap model,
+			Model model,
 			final RedirectAttributes redirectAttribute
 			)
 	{
-		//		if (bookingDate.isAfter(LocalDate.now()) || startTime.isBefore(endTime) || startTime.getHour()== endTime.getHour()) {
-		//			redirectAttribute.addFlashAttribute("info", "L'heure de réservation ne doit pas être antérieure à la date d'aujord'hui");
-		//
-		//			return new ModelAndView("redirect:/reservations/resources/searchform");
-		//
-		//		}
-
 		// Get the list of available items for a given date
 		List<Laptop>availableLaptops   = laptopService.getAvailableLaptops(bookingDate, startTime, endTime);
 		List<Classroom> availableRooms = classroomService.getAvailableRooms(bookingDate, startTime, endTime);
 
 		if (availableLaptops.size() == 0 && availableRooms.size() == 0) {
-			redirectAttribute.addFlashAttribute("info", "Aucun élémenys correspond à votre recherche !");
+			redirectAttribute.addFlashAttribute("info", "Aucun éléments correspond à votre recherche !");
 			return new ModelAndView("redirect:/reservations/resources/searchform", getSearchParamsMap(bookingDate, startTime, endTime));
 		}
 		else {
@@ -91,7 +84,7 @@ public class ReservationController {
 
 			model.addAttribute("availableLaptops", availableLaptops);
 			model.addAttribute("availableRooms", availableRooms);
-			return new ModelAndView("reservation/resource-booking");
+			return new ModelAndView("reservation/resource-booking", model.asMap());
 		}
 	}
 
@@ -106,20 +99,28 @@ public class ReservationController {
 
 	@RequestMapping(path = "/resource/add", method = RequestMethod.GET)
 	public ModelAndView addOrUpdateReservation(
-			@RequestParam(required = false, defaultValue = "0") int bookingId,
+			@RequestParam(name = "bookingId", required = false, defaultValue = "-1") int bookingId,
 			@RequestParam(name = "laptopId") Integer laptopId,
 			@RequestParam(name = "roomId") Integer roomId,
 			@RequestParam(name = "bookingDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate bookingDate,
 			@RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)LocalTime startTime,
 			@RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)LocalTime endTime,
-			ModelMap model,
+			Model model,
 			final RedirectAttributes redirectAttribute) {
 		Laptop bookedLaptop = laptopService.findById(laptopId);
 		Classroom bookedRoom = classroomService.findById(roomId);
 
+		if( bookedLaptop == null && bookedRoom == null)
+		{
+			// NRO : ajouter la conversion en ISO date
+			model.addAttribute("bookingDate", isoDateFormatter.format(bookingDate));
+			model.addAttribute("startTime",   isoTimeFormatter.format(startTime));
+			model.addAttribute("endTime",     isoTimeFormatter.format(endTime));
+			redirectAttribute.addFlashAttribute("msg", "Erreur : vous devez sélectionner au moins une salle ou un ordinateur");
+			return new ModelAndView("redirect:/reservations/resources/search",model.asMap());
+		}
 		// Get User from context
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		User currentUser = userService.findOneByEmail(email);
+		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			redirectAttribute.addFlashAttribute("", "Il faut se connecter pour pouvoir réserver");
 			return new ModelAndView("redirect:/login");
@@ -128,11 +129,16 @@ public class ReservationController {
 		// Add or update
 		Date createdAt = new Date();
 		Reservation res;
-		if (bookingId > 0) {
+		if (bookingId >= 0) {
 			// Update if id is not null
-			res = updateReservation(bookingId, bookingDate, startTime, endTime);
+			res = updateReservation(bookingId, bookedLaptop, bookedRoom, bookingDate, startTime, endTime);
+			if(res == null )
+			{
+				redirectAttribute.addFlashAttribute("msg", "Erreur : une ressource n'est pas disponible à la nouvelle date");
+				model.addAttribute("id", bookingId);
+				return new ModelAndView("redirect:/reservations/updateForm",model.asMap());
+			}
 		} else {
-
 			res = new Reservation(createdAt, bookingDate, startTime, endTime, currentUser,bookedLaptop, bookedRoom );
 		}
 
@@ -140,22 +146,32 @@ public class ReservationController {
 		reservationService.addOrUpdate(res);
 
 		// Confirm booking by semding email
-		sendBookingConfirmation(bookingDate, currentUser);
-
+		try
+		{
+			sendBookingConfirmation(bookingDate, currentUser);
+		}
+		catch(Exception e)
+		{
+			System.err.println("Sending mail failed with exception : " + e);
+		}
 
 		// Redirection to reservations list with a flash message
 		redirectAttribute.addFlashAttribute("message", "Réservation ajoutée avec succès !");
-		ModelAndView mav = new ModelAndView("redirect:/reservations");
-		mav.getModelMap().addAllAttributes(model);
-		return mav;
+		return new ModelAndView("redirect:/reservations", model.asMap());
 
 	}
 
-	private Reservation updateReservation(@RequestParam(required = false, defaultValue = "0") int bookingId, @RequestParam(name = "bookingDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate bookingDate, @RequestParam(name = "startTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime, @RequestParam(name = "endTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime) {
+	private Reservation updateReservation(int bookingId, Laptop bookedLaptop, Classroom bookedRoom, LocalDate bookingDate, LocalTime startTime, LocalTime endTime) {
 		Reservation resToUpdate = reservationService.findById(bookingId);
 		resToUpdate.setBookingDate(bookingDate);
 		resToUpdate.setStartTime(startTime);
 		resToUpdate.setEndTime(endTime);
+		resToUpdate.setLaptop(bookedLaptop);
+		resToUpdate.setClassroom(bookedRoom);
+		if( !reservationService.checkIsPossible(resToUpdate) )
+		{
+			return null;
+		}
 		return resToUpdate;
 	}
 
@@ -171,7 +187,7 @@ public class ReservationController {
 
 	// Afficher le formulaire pour modifier une réservation
 	@RequestMapping(path= "/updateForm")
-	public ModelAndView getUpdateForm(@RequestParam Integer id, ModelMap model)
+	public ModelAndView getUpdateForm(@RequestParam Integer id, Model model)
 	{
 		Reservation resa = reservationService.findById(id);
 		model.addAttribute("reservation", resa);
@@ -179,7 +195,9 @@ public class ReservationController {
 		List<String> liste_end_time_selected   = getSelectedList(resa.getEndTime().getHour()  - 10);
 		model.addAttribute("start_time_preselected", liste_start_time_selected);
 		model.addAttribute("end_time_preselected"  , liste_end_time_selected);
-		return new ModelAndView("reservation/updateReservationForm", model);
+		model.addAttribute("allLaptops", laptopService.getAll());
+		model.addAttribute("allRooms"  , classroomService.getAll());
+		return new ModelAndView("reservation/updateReservationForm", model.asMap());
 	}
 
 	private List<String> getSelectedList(int selected)
@@ -204,5 +222,48 @@ public class ReservationController {
 
 	}
 
+	public User getCurrentUser()
+	{
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		return userService.findOneByEmail(email);
+	}
+	
+	@RequestMapping
+	public ModelAndView showAllReservations(ModelMap model) {
+		return new ModelAndView("redirect:reservations/current");
+	}
+	
+	// Gestion des réservations
+    @RequestMapping(path = "/historic")
+    public ModelAndView showHistoricReservations(ModelMap model) {
+    	List<Reservation> listeReservations;
+    	User currentUser = getCurrentUser();
+    	if( currentUser.isAdmin()  )
+    	{
+    		listeReservations = reservationService.getAllHistoric();
+    	}
+    	else
+    	{
+    		listeReservations = reservationService.getForUserHistoric(currentUser.getId());
+    	}
+        model.addAttribute("reservations", listeReservations);
+        return new ModelAndView("admin/bookings-historic");
+    }
+
+    @RequestMapping(path = "/current")
+    public ModelAndView getCurrentReservations(ModelMap model) {
+    	List<Reservation> listeReservations;
+    	User currentUser = getCurrentUser();
+    	if( currentUser.isAdmin()  )
+    	{
+    		listeReservations = reservationService.getAllCurrent();
+    	}
+    	else
+    	{
+    		listeReservations = reservationService.getForUserCurrent(currentUser.getId());
+    	}
+        model.addAttribute("reservations", listeReservations);
+        return new ModelAndView("reservation/reservations");
+    }
 }
 
