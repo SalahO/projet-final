@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.simplon.sie</groupId>
 	<artifactId>gestionressources</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>1.0.0.RELEASE</version>
 	<packaging>war</packaging>
 
 	<properties>
