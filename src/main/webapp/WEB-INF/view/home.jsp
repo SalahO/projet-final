@@ -55,13 +55,13 @@
                             <security:authorize access="isAuthenticated()">
                                 <li>
                                     <div class="dropdown">
-                                        <button class=" btn btn-lg btn-success monCompte" type="button"
+                                        <button class=" btn btn-lg btn-success " type="button"
                                                 data-toggle="dropdown">Réservations
                                             <span class="caret"></span></button>
                                         <ul class="dropdown-menu">
                                             <li class="dropdown-header">Réservations</li>
-                                            <li><a href="/reservations/current" class="btn btn-lg ">En cours</a></li>
-                                            <li><a href="/reservations/historic" class="btn btn-lg ">Historique</a></li>
+                                            <li><a href="/reservations/current" class="btn-lg ">En cours</a></li>
+                                            <li><a href="/reservations/historic" class="btn-lg ">Historique</a></li>
                                         </ul>
                                    </div>
                                 </li>
@@ -70,11 +70,10 @@
                                         <button class=" btn btn-lg btn-success monCompte" type="button"
                                                 data-toggle="dropdown">Mon compte
                                             <span class="caret"></span></button>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="/reservations" class="btn btn-lg ">Mes réservations</a></li>
-                                            <li><a href="/users/profil" class="btn btn-lg ">Mon profil</a></li>
-                                            <li><a href="/mail/formSend" class="btn btn-lg "> Contact </a></li>
-                                            <li><a href="/logout" class="btn btn-lg btn-danger"> Logout </a></li>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="/users/profil" class="btn-lg "><span class="glyphicon glyphicon-user" style="color: #018865"> </span> Mon profil</a></li>
+                                            <li><a href="/mail/formSend" class="btn-lg "><span class="glyphicon glyphicon-send" style="color: #018865"></span>  Contact </a></li>
+                                            <li><a href="/logout" class="btn-lg btn-danger"><span class="glyphicon glyphicon-off" ></span>  Logout </a></li>
                                         </ul>
                                     </div>
                                 </li>
