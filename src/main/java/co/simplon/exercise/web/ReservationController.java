@@ -50,11 +50,11 @@ public class ReservationController {
 	private final DateTimeFormatter isoDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
  	private final DateTimeFormatter isoTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-	@RequestMapping
-	public ModelAndView showMyCurentReservations(ModelMap model) {
-		model.addAttribute("reservations", reservationService.getMyCurentBookings(getCurrentUser().getId()));
-		return new ModelAndView("reservation/reservations");
-	}
+//	@RequestMapping
+//	public ModelAndView showMyCurentReservations(ModelMap model) {
+//		model.addAttribute("reservations", reservationService.getMyCurentBookings(getCurrentUser().getId()));
+//		return new ModelAndView("reservation/reservations");
+//	}
 
 	@RequestMapping(value = "resources/searchform", method = RequestMethod.GET)
 	public ModelAndView getAvailableResourcesSearchForm(ModelMap model) {
@@ -117,7 +117,7 @@ public class ReservationController {
 
 		if( bookedLaptop == null && bookedRoom == null)
 		{
-			// NRO : ajouter la conversion en ISO date
+			// ajouter la conversion en ISO date
 			model.addAttribute("bookingDate", isoDateFormatter.format(bookingDate));
 			model.addAttribute("startTime",   isoTimeFormatter.format(startTime));
 			model.addAttribute("endTime",     isoTimeFormatter.format(endTime));
@@ -246,13 +246,13 @@ public class ReservationController {
     	User currentUser = getCurrentUser();
     	if( currentUser.isAdmin()  )
     	{
-    		listeReservations = reservationService.getAllHistoric();
+    		listeReservations = reservationService.getAllBookingsHistory();
     	}
     	else
     	{
-    		listeReservations = reservationService.getForUserHistoric(currentUser.getId());
+//    		listeReservations = reservationService.getForUserHistoric(currentUser.getId());
     	}
-        model.addAttribute("reservations", listeReservations);
+//        model.addAttribute("reservations", listeReservations);
         return new ModelAndView("admin/bookings-historic");
     }
 
@@ -262,11 +262,11 @@ public class ReservationController {
     	User currentUser = getCurrentUser();
     	if( currentUser.isAdmin()  )
     	{
-    		listeReservations = reservationService.getAllCurrent();
+    		listeReservations = reservationService.getAllCurentBookings();
     	}
     	else
     	{
-    		listeReservations = reservationService.getForUserCurrent(currentUser.getId());
+    		listeReservations = reservationService.getMyCurentBookings(currentUser.getId());
     	}
         model.addAttribute("reservations", listeReservations);
         return new ModelAndView("reservation/reservations");
